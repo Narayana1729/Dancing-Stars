@@ -1,0 +1,62 @@
+{
+  "spatial_compatibility": {
+    "identical_grid_definition": true,
+    "frequencyA": {
+      "shape_t0": [
+        33696,
+        34272
+      ],
+      "shape_t1": [
+        33696,
+        34272
+      ],
+      "dtype": "float32",
+      "epsg": 32645,
+      "x_spacing_m": 10.0,
+      "y_spacing_m": -10.0,
+      "x_min_m": 361445.0,
+      "x_max_m": 704155.0,
+      "y_min_m": 2130485.0,
+      "y_max_m": 2467435.0,
+      "exact_coordinate_match": true
+    },
+    "frequencyB": {
+      "shape_t0": [
+        4212,
+        4284
+      ],
+      "shape_t1": [
+        4212,
+        4284
+      ],
+      "x_spacing_m": 80.0,
+      "total_pixels": 18044208,
+      "valid_pixels_t0": 6925515,
+      "valid_percent_t0": 38.38,
+      "valid_pixels_t1": 6924251,
+      "valid_percent_t1": 38.37,
+      "coregistered_overlap_pixels": 6919326,
+      "overlap_percent_of_t0": 99.91
+    }
+  },
+  "radiometric_summary": {
+    "t0_hh_median_db": -17.34,
+    "t1_hh_median_db": -14.98,
+    "t0_hv_median_db": -24.57,
+    "t1_hv_median_db": -23.64,
+    "delta_hh_median_db": 1.8,
+    "delta_hv_median_db": 0.71
+  },
+  "temporal_baseline": {
+    "t0_date": "2026-03-04T23:37:20Z",
+    "t1_date": "2026-04-21T23:37:20Z",
+    "delta_days": 48,
+    "orbit_cycles": 4,
+    "orbit_cadence_days": 12,
+    "track": 98,
+    "frame": 12,
+    "orbit_direction": "Ascending",
+    "software_crid_t0": "P05023",
+    "software_crid_t1": "P05023"
+  }
+}

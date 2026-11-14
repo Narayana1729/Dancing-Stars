@@ -1,0 +1,53 @@
+# Environment & Secrets
+.env
+.env.local
+*.env
+
+# Python
+.venv/
+backend/.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.eggs/
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+dist/
+frontend/dist/
+.npm
+.eslintcache
+
+# OS & Editor
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Backups & Archives
+.backup/
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+
+# Heavy Satellite Rasters & Binary Imagery (Generated/Raw)
+data/raw/*
+data/intermediate/*
+data/processed/*
+data/reference/sentinel2_raw/*
+!data/**/.gitkeep
+!data/processed/validation/*.json
+!data/processed/validation/*.png

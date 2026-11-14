@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NISAR Forest Disturbance</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1d232b;--muted:#5b6672;--line:#d9dee5;--wet:#2166ac;--dry:#b2182b;--ok:#2e7d32;--accent:#1f6feb}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1318;--card:#171d24;--text:#e6ebf1;--muted:#9aa6b2;--line:#2a333d;--wet:#6fa8dc;--dry:#ef8a8a;--ok:#81c784;--accent:#6aa6ff}}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--card)}
+header h1{font-size:17px;margin:0 auto 0 0}
+select,input,button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+button{background:var(--accent);color:#fff;border:0;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;padding:16px}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr);padding:12px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.full{grid-column:1 / -1}
+h2{font-size:15px;margin:0 0 10px}
+#map{height:520px;border-radius:8px}
+@media (max-width:900px){#map{height:380px}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stat b{display:block;font-size:17px}
+.muted{color:var(--muted)}
+.err{color:var(--dry)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}
+.yes{color:var(--ok);font-weight:600} .no{color:var(--muted)}
+.expl p{margin:0 0 10px}
+</style>
+</head>
+<body>
+<header>
+  <h1>NISAR forest disturbance (GCOV)</h1>
+  <label>Run <select id="run"></select></label>
+  <span id="status" class="muted"></span>
+</header>
+
+<main>
+  <section class="card">
+    <div id="map"></div>
+    <div class="row" style="margin-top:8px">
+      <label>Layer <select id="layer"></select></label>
+      <label><input type="checkbox" id="showLayer" checked> Show layer</label>
+      <label><input type="checkbox" id="showRegions" checked> Disturbance patches</label>
+      <span id="legend" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Summary</h2>
+    <div id="summary" class="cards"></div>
+    <h2 style="margin-top:16px">What the numbers say</h2>
+    <div id="explanation" class="expl"></div>
+  </section>
+
+  <section class="card full">
+    <h2>Validation against Sentinel-2 vegetation (NDVI)</h2>
+    <p class="muted" id="validationNote"></p>
+    <div style="overflow-x:auto"><table id="validation"></table></div>
+  </section>
+
+  <section class="card full">
+    <h2>Actions</h2>
+    <div class="row">
+      <button id="runChange" type="button">Run change and disturbance analysis</button>
+      <button id="runValidate" type="button">Run NDVI validation</button>
+      <span id="actionMsg" class="muted"></span>
+    </div>
+    <p class="muted" style="font-size:12px">Change takes about a minute and validation about three minutes.</p>
+  </section>
+</main>
+
+<script>
+const API = "/api/v1/forest";
+const $ = id => document.getElementById(id);
+function fmt(v, d = 2, signed = false) {
+  if (v == null || Number.isNaN(v)) return "n/a";
+  return (signed && v > 0 ? "+" : "") + Number(v).toFixed(d);
+}
+function el(tag, props = {}, children = []) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "text") n.textContent = v;
+    else if (k === "class") n.className = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of [].concat(children)) if (c != null) n.append(c);
+  return n;
+}
+async function getJSON(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    let msg = `${r.status} ${r.statusText}`;
+    try { const j = await r.json(); if (j.detail) msg = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail); } catch (_) {}
+    throw new Error(msg);
+  }
+  return r.json();
+}
+function setStatus(msg, isErr = false) {
+  $("status").textContent = msg || "";
+  $("status").className = isErr ? "err" : "muted";
+}
+const guard = fn => (...a) => fn(...a).catch(e => setStatus(e.message, true));
+
+const map = L.map("map").setView([14.25, 75.25], 9);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18, attribution: "&copy; OpenStreetMap contributors",
+}).addTo(map);
+let layerImg = null, regionsLayer = null, runId = null;
+
+function syncLayers() {
+  if (layerImg) $("showLayer").checked ? layerImg.addTo(map) : map.removeLayer(layerImg);
+  if (regionsLayer) $("showRegions").checked ? regionsLayer.addTo(map) : map.removeLayer(regionsLayer);
+}
+
+function renderSummary(d) {
+  const s = d.summary;
+  if (!s) {
+    $("summary").replaceChildren(el("div", { class: "stat", text: "Run the change analysis to see results." }));
+    return;
+  }
+  const v = d.validation;
+  const cards = [
+    ["Forest area", `${fmt(s.forest_area_ha, 0)} ha`, "WorldCover 2021 tree cover"],
+    ["Possible disturbance", `${fmt(s.disturbed_ha, 0)} ha`, `${fmt(100 * s.disturbed_share_of_forest, 2)}% of forest`],
+    ["Patches", `${s.n_regions}`, "HV drop of 3 dB or more"],
+    ["Median HV change", `${fmt(s.median_HV_change_db, 2, true)} dB`, `HH ${fmt(s.median_HH_change_db, 2, true)} dB`],
+    ["Optical check", v && v.n_checked ? `${v.n_confirmed_by_optics} of ${v.n_checked}` : "not run",
+      v && v.n_checked ? "patches with an NDVI drop" : "run NDVI validation"],
+  ];
+  $("summary").replaceChildren(...cards.map(([k, val, sub]) =>
+    el("div", { class: "stat" }, [el("span", { class: "muted", text: k }), el("b", { text: val }), el("span", { class: "muted", text: sub })])));
+}
+
+function renderExplanation(e) {
+  $("explanation").replaceChildren(...(e ? e.lines : ["No explanation yet."]).map(t => el("p", { text: t })));
+}
+
+function renderValidation(v) {
+  if (!v) {
+    $("validationNote").textContent = "Not run yet. Click “Run NDVI validation”.";
+    $("validation").replaceChildren();
+    return;
+  }
+  $("validationNote").textContent =
+    `Sentinel-2 NDVI from ${v.ndvi_dates[0]} and ${v.ndvi_dates[1]} (cloud ${fmt(v.ndvi_scene_cloud_pct[0], 0)}% and ${fmt(v.ndvi_scene_cloud_pct[1], 0)}%). ` +
+    `A patch counts as confirmed when its mean NDVI falls by ${v.ndvi_drop_threshold} or more. ` +
+    `Unflagged forest shows that drop in ${fmt(100 * (v.unflagged_forest_drop_rate || 0), 1)}% of pixels.`;
+  const head = el("tr", {}, ["Patch", "Area (ha)", "Mean NDVI change", "Pixels with drop", "Optical check"].map(h => el("th", { text: h })));
+  const rows = v.regions.map(r => el("tr", {}, [
+    el("td", { text: r.region_id }),
+    el("td", { text: fmt(r.area_ha, 2) }),
+    el("td", { text: r.ndvi_checked ? fmt(r.mean_ndvi_change, 3, true) : "no clear scene" }),
+    el("td", { text: r.ndvi_checked ? `${fmt(100 * r.fraction_ndvi_drop, 0)}%` : "n/a" }),
+    el("td", { class: r.confirmed_by_optics ? "yes" : "no", text: !r.ndvi_checked ? "not checked" : r.confirmed_by_optics ? "confirmed" : "not confirmed" }),
+  ]));
+  $("validation").replaceChildren(head, ...rows);
+}
+
+let regionsCache = null;
+function renderRegions(fc) {
+  if (regionsLayer) map.removeLayer(regionsLayer);
+  regionsLayer = L.geoJSON(fc, {
+    style: { color: "#b2182b", weight: 2, fillOpacity: 0.35 },
+    onEachFeature: (f, layer) => {
+      const p = f.properties;
+      layer.bindPopup(() => el("div", {}, [
+        el("strong", { text: `Patch #${p.rank}` }),
+        el("div", { text: `${fmt(p.area_ha, 2)} ha · HV ${fmt(p.mean_HV_db, 1, true)} dB · HH ${fmt(p.mean_HH_db, 1, true)} dB` }),
+      ]));
+    },
+  });
+  syncLayers();
+}
+
+async function showLayer(layer) {
+  const ov = await getJSON(`${API}/runs/${runId}/layers/${layer}/overlay`);
+  if (layerImg) map.removeLayer(layerImg);
+  layerImg = L.imageOverlay(`${API}/runs/${runId}/layers/${layer}.png`, ov.bounds, { opacity: 0.9 });
+  $("legend").textContent = `${ov.label}: ${ov.value_range[0]} to ${ov.value_range[1]}`;
+  syncLayers();
+  map.fitBounds(ov.bounds, { padding: [20, 20] });
+}
+
+async function showRun(id) {
+  runId = id;
+  setStatus("Loading…");
+  const d = await getJSON(`${API}/runs/${id}`);
+  const sel = $("layer");
+  sel.replaceChildren(...d.layers.map(l => el("option", { value: l, text: l.replaceAll("_", " ") })));
+  renderSummary(d);
+  renderExplanation(d.explanation);
+  renderValidation(d.validation);
+  if (d.summary) {
+    renderRegions(await getJSON(`${API}/runs/${id}/regions`));
+    await showLayer(sel.value);
+  }
+  setStatus("");
+}
+
+async function loadRuns() {
+  const { runs } = await getJSON(`${API}/runs`);
+  if (!runs.length) { setStatus("No forest runs yet. Prepare one with the forest pipeline first."); return; }
+  $("run").replaceChildren(...runs.map(r => el("option", { value: r.run_id, text: `${r.track_key} · ${r.n_dates} dates · ${r.run_id}` })));
+  await showRun(runs[0].run_id);
+}
+
+async function action(url, label, btn) {
+  btn.disabled = true;
+  $("actionMsg").textContent = `${label}… this can take a few minutes.`;
+  try {
+    await getJSON(url, { method: "POST" });
+    $("actionMsg").textContent = `${label} done.`;
+    await showRun(runId);
+  } catch (e) {
+    $("actionMsg").textContent = e.message;
+    $("actionMsg").className = "err";
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+$("run").addEventListener("change", guard(e => showRun(e.target.value)));
+$("layer").addEventListener("change", guard(e => showLayer(e.target.value)));
+$("showLayer").addEventListener("change", syncLayers);
+$("showRegions").addEventListener("change", syncLayers);
+$("runChange").addEventListener("click", () => action(`${API}/runs/${runId}/change`, "Change analysis", $("runChange")));
+$("runValidate").addEventListener("click", () => action(`${API}/runs/${runId}/validate`, "NDVI validation", $("runValidate")));
+loadRuns().catch(e => setStatus(e.message, true));
+</script>
+</body>
+</html>

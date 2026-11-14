@@ -1,0 +1,55 @@
+{
+  "primary_recommended_package": "Identical Relative Orbit R076 Pre/Post Validation Quad",
+  "scene_count": 4,
+  "total_download_bytes": 3223337699,
+  "total_download_gib": 3.0,
+  "available_disk_gib": 120.66,
+  "target_destination": "/Users/srimannarayanadeevi/NISAR/data/reference/sentinel2_raw",
+  "estimated_transfer_time_minutes": 18.6,
+  "recommended_scenes": [
+    {
+      "date": "2026-03-02",
+      "tile": "T45QVD",
+      "orbit": "R076",
+      "cloud_pct": 0.0,
+      "sanctuary_cov_pct": 25.05,
+      "core_cov_pct": 35.36,
+      "size_mb": 637.7,
+      "product_id": "S2C_MSIL2A_20260302T044721_N0512_R076_T45QVD_20260302T094009.SAFE",
+      "role": "Pre-Event Baseline (R076, 2 days before NISAR T0)"
+    },
+    {
+      "date": "2026-03-02",
+      "tile": "T45QVE",
+      "orbit": "R076",
+      "cloud_pct": 6.5,
+      "sanctuary_cov_pct": 89.64,
+      "core_cov_pct": 86.61,
+      "size_mb": 892.4,
+      "product_id": "S2C_MSIL2A_20260302T044721_N0512_R076_T45QVE_20260302T094009.SAFE",
+      "role": "Pre-Event Baseline (R076, 2 days before NISAR T0)"
+    },
+    {
+      "date": "2026-04-16",
+      "tile": "T45QVD",
+      "orbit": "R076",
+      "cloud_pct": 6.64,
+      "sanctuary_cov_pct": 25.05,
+      "core_cov_pct": 35.36,
+      "size_mb": 645.5,
+      "product_id": "S2B_MSIL2A_20260416T044659_N0512_R076_T45QVD_20260416T083549.SAFE",
+      "role": "Post-Event Assessment (R076, 5 days before NISAR T1)"
+    },
+    {
+      "date": "2026-04-16",
+      "tile": "T45QVE",
+      "orbit": "R076",
+      "cloud_pct": 2.09,
+      "sanctuary_cov_pct": 89.64,
+      "core_cov_pct": 86.61,
+      "size_mb": 898.4,
+      "product_id": "S2B_MSIL2A_20260416T044659_N0512_R076_T45QVE_20260416T083549.SAFE",
+      "role": "Post-Event Assessment (R076, 5 days before NISAR T1)"
+    }
+  ]
+}

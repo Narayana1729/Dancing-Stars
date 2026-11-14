@@ -1,0 +1,41 @@
+{
+  "dataset_name": "Similipal Forest Reference & Disturbance Benchmark",
+  "region": "Similipal Tiger Reserve, Odisha, India",
+  "geographic_bounds_wgs84": {
+    "west": 86.05,
+    "south": 21.45,
+    "east": 86.65,
+    "north": 22.05
+  },
+  "projected_bounds_utm45n": {
+    "crs": "EPSG:32645",
+    "x_origin": 401640.0,
+    "y_origin": 2438360.0,
+    "pixel_size_m": 80.0,
+    "height_pixels": 827,
+    "width_pixels": 779,
+    "total_area_km2": 4123.09
+  },
+  "forest_cover_benchmark": {
+    "source": "Hansen Global Forest Change v1.11 (treecover2000)",
+    "citation": "Hansen, M. C., et al. (2013). High-Resolution Global Maps of 21st-Century Forest Cover Change. Science, 342(6160), 850-853.",
+    "forest_canopy_threshold_percent": 30,
+    "forest_pixels": 311176,
+    "forest_percent": 48.3,
+    "forest_area_km2": 1991.53,
+    "non_forest_pixels": 333057,
+    "non_forest_percent": 51.7
+  },
+  "historical_disturbance_benchmark": {
+    "source": "Hansen Global Forest Change v1.11 (lossyear 2001-2023)",
+    "historical_loss_pixels": 1579,
+    "historical_loss_percent": 0.25,
+    "historical_loss_area_km2": 10.11
+  },
+  "national_reference_alignment": {
+    "organization": "Forest Survey of India (FSI)",
+    "publication": "India State of Forest Report (ISFR)",
+    "mayurbhanj_district_forest_cover_fsi_percent": 38.3,
+    "similipal_core_and_buffer_area_km2": 2750.0
+  }
+}

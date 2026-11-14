@@ -1,0 +1,435 @@
+{
+ "GCOV": [
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001",
+   "acquired": "2025-11-02T09:52:26Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2009071616,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "X05009",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_BETA_V1/NISAR_L2_PR_GCOV_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001/NISAR_L2_PR_GCOV_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001",
+   "acquired": "2026-06-18T09:52:28Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 1828716544,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001/NISAR_L2_PR_GCOV_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001",
+   "acquired": "2026-06-30T09:52:27Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2055208960,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001/NISAR_L2_PR_GCOV_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001",
+   "acquired": "2026-07-12T09:52:27Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2009071616,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001/NISAR_L2_PR_GCOV_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001",
+   "acquired": "2026-07-24T09:52:26Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 1589641216,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001/NISAR_L2_PR_GCOV_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001",
+   "acquired": "2026-08-17T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2013265920,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001",
+   "acquired": "2026-08-29T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2013265920,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001",
+   "acquired": "2026-09-10T09:52:24Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2063597568,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001",
+   "acquired": "2026-09-22T09:52:24Z",
+   "pol": [
+    "HH"
+   ],
+   "size_bytes": 1631584256,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001",
+   "acquired": "2026-10-04T09:52:24Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2063597568,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GCOV_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001",
+   "acquired": "2026-10-16T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 2009071616,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_PROVISIONAL_V1/NISAR_L2_PR_GCOV_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001/NISAR_L2_PR_GCOV_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001.h5"
+  }
+ ],
+ "GSLC": [
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001",
+   "acquired": "2025-11-02T09:52:26Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 12792627200,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "X05009",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_BETA_V1/NISAR_L2_PR_GSLC_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001/NISAR_L2_PR_GSLC_004_060_A_172_2005_DHDH_A_20251102T095226_20251102T095300_X05009_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001",
+   "acquired": "2026-06-18T09:52:28Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 9982443520,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001/NISAR_L2_PR_GSLC_023_060_A_172_2005_DHDH_A_20260618T095228_20260618T095302_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001",
+   "acquired": "2026-06-30T09:52:27Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 13140754432,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001/NISAR_L2_PR_GSLC_024_060_A_172_2005_DHDH_A_20260630T095227_20260630T095302_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001",
+   "acquired": "2026-07-12T09:52:27Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 12616466432,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001/NISAR_L2_PR_GSLC_025_060_A_172_2005_DHDH_A_20260712T095227_20260712T095301_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001",
+   "acquired": "2026-07-24T09:52:26Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 6945767424,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001/NISAR_L2_PR_GSLC_026_060_A_172_2005_DHDH_A_20260724T095226_20260724T095300_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001",
+   "acquired": "2026-08-17T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 12792627200,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_028_060_A_172_2005_DHDH_A_20260817T095225_20260817T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001",
+   "acquired": "2026-08-29T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 12796821504,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_029_060_A_172_2005_DHDH_A_20260829T095225_20260829T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001",
+   "acquired": "2026-09-10T09:52:24Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 13140754432,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_030_060_A_172_2005_DHDH_A_20260910T095224_20260910T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001",
+   "acquired": "2026-09-22T09:52:24Z",
+   "pol": [
+    "HH"
+   ],
+   "size_bytes": 6664749056,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_031_060_A_172_2005_SHSH_A_20260922T095224_20260922T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001",
+   "acquired": "2026-10-04T09:52:24Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 13157531648,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_032_060_A_172_2005_DHDH_A_20261004T095224_20261004T095259_P05023_N_F_J_001.h5"
+  },
+  {
+   "scene_id": "NISAR_L2_PR_GSLC_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001",
+   "acquired": "2026-10-16T09:52:25Z",
+   "pol": [
+    "HH",
+    "HV"
+   ],
+   "size_bytes": 12792627200,
+   "direction": "ASCENDING",
+   "path": 60,
+   "frame": 172,
+   "crid": "P05023",
+   "url": "https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GSLC_PROVISIONAL_V1/NISAR_L2_PR_GSLC_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001/NISAR_L2_PR_GSLC_033_060_A_172_2005_DHDH_A_20261016T095225_20261016T095259_P05023_N_F_J_001.h5"
+  }
+ ],
+ "S1_GRD_HD": [
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20260909T094837_20260909T094902_004499_0085B8_CEE3",
+   "acquired": "2026-09-09T09:48:37Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1051296344,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20260909T094837_20260909T094902_004499_0085B8_CEE3.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20260909T094902_20260909T094927_004499_0085B8_D9BF",
+   "acquired": "2026-09-09T09:49:02Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1035470964,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20260909T094902_20260909T094927_004499_0085B8_D9BF.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20260921T094838_20260921T094903_004674_008BB9_34F8",
+   "acquired": "2026-09-21T09:48:38Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1048087308,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20260921T094838_20260921T094903_004674_008BB9_34F8.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20260921T094903_20260921T094928_004674_008BB9_AE8E",
+   "acquired": "2026-09-21T09:49:03Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1038346611,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20260921T094903_20260921T094928_004674_008BB9_AE8E.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261003T094838_20261003T094903_004849_0091D2_1C9F",
+   "acquired": "2026-10-03T09:48:38Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1049036212,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261003T094838_20261003T094903_004849_0091D2_1C9F.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261003T094903_20261003T094928_004849_0091D2_DB2D",
+   "acquired": "2026-10-03T09:49:03Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1035271794,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261003T094903_20261003T094928_004849_0091D2_DB2D.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261015T094838_20261015T094903_005024_0097EF_3DB1",
+   "acquired": "2026-10-15T09:48:38Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1045430635,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261015T094838_20261015T094903_005024_0097EF_3DB1.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261015T094903_20261015T094928_005024_0097EF_4BC8",
+   "acquired": "2026-10-15T09:49:03Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1034345413,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261015T094903_20261015T094928_005024_0097EF_4BC8.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261108T094837_20261108T094902_005374_00A3F1_DF54",
+   "acquired": "2026-11-08T09:48:37Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1045469602,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261108T094837_20261108T094902_005374_00A3F1_DF54.zip"
+  },
+  {
+   "scene_id": "S1D_IW_GRDH_1SDV_20261108T094902_20261108T094927_005374_00A3F1_7973",
+   "acquired": "2026-11-08T09:49:02Z",
+   "pol": [
+    "VV+VH"
+   ],
+   "size_bytes": 1039441869,
+   "direction": "DESCENDING",
+   "path": 83,
+   "url": "https://datapool.asf.alaska.edu/GRD_HD/SD/S1D_IW_GRDH_1SDV_20261108T094902_20261108T094927_005374_00A3F1_7973.zip"
+  }
+ ],
+ "_meta": {
+  "source": "ASF DAAC search API",
+  "bbox_wsen": [
+   -63.5,
+   -10.5,
+   -62.5,
+   -9.5
+  ],
+  "retrieved": "2026-11-13",
+  "note": "catalogue metadata only; no pixel data"
+ }
+}

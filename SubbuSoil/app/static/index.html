@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NISAR Soil Moisture Change</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--text:#1d232b;--muted:#5b6672;--line:#d9dee5;--wet:#2166ac;--dry:#b2182b;--ok:#2e7d32;--accent:#1f6feb}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0f1318;--card:#171d24;--text:#e6ebf1;--muted:#9aa6b2;--line:#2a333d;--wet:#6fa8dc;--dry:#ef8a8a;--ok:#81c784;--accent:#6aa6ff}}
+:root[data-theme="dark"]{--bg:#0f1318;--card:#171d24;--text:#e6ebf1;--muted:#9aa6b2;--line:#2a333d;--wet:#6fa8dc;--dry:#ef8a8a;--ok:#81c784;--accent:#6aa6ff}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,"Segoe UI",Roboto,sans-serif}
+header{padding:12px 16px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:12px;align-items:center;background:var(--card)}
+header h1{font-size:17px;margin:0 auto 0 0}
+select,input,textarea,button{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;max-width:100%}
+button{background:var(--accent);color:#fff;border:0;cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+main{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;padding:16px}
+@media (max-width:900px){main{grid-template-columns:minmax(0,1fr);padding:12px}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+h2{font-size:15px;margin:0 0 10px}
+#map{height:520px;border-radius:8px}
+#map.drawing,#map.drawing .leaflet-grab{cursor:crosshair !important}
+@media (max-width:900px){#map{height:380px}}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stat b{display:block;font-size:17px}
+.muted{color:var(--muted)}
+.err{color:var(--dry)}
+.badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:12px;border:1px solid currentColor;white-space:nowrap}
+.supports{color:var(--ok)} .contradicts{color:var(--dry)} .inconclusive,.unavailable{color:var(--muted)}
+.factor{border-top:1px solid var(--line);padding:10px 0}
+.factor:first-child{border-top:0;padding-top:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600}
+.wet{color:var(--wet)} .dry{color:var(--dry)}
+.chart{height:260px;position:relative}
+.narr p{margin:0 0 10px}
+details summary{cursor:pointer;color:var(--accent)}
+.full{grid-column:1 / -1}
+</style>
+</head>
+<body>
+<header>
+  <h1>NISAR soil moisture change</h1>
+  <label>Run <select id="run"></select></label>
+  <label>Date pair <select id="pair"></select></label>
+  <button id="prevPair" type="button" title="Previous date pair">◀</button>
+  <button id="nextPair" type="button" title="Next date pair">▶</button>
+  <span id="status" class="muted"></span>
+</header>
+
+<main>
+  <section id="progressCard" class="card full" hidden>
+    <h2>Analysing your area</h2>
+    <progress id="progressBar" max="100" value="0" style="width:100%;height:18px"></progress>
+    <p style="margin:8px 0"><strong id="progressPct">0%</strong> · <span id="progressStage"></span> · <span id="progressElapsed" class="muted"></span></p>
+    <p id="progressMsg" class="muted" style="margin:0 0 6px"></p>
+    <ul id="progressSteps" class="muted" style="columns:2;margin:0;padding-left:18px;list-style:none"></ul>
+    <p class="muted" style="font-size:12px;margin:8px 0 0">Percentages mark stages, not time, so they step up rather than move smoothly.</p>
+  </section>
+  <section class="card">
+    <div id="map"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="drawBtn" type="button">Draw area on map</button>
+      <button id="clearBtn" type="button">Clear</button>
+      <button id="runMapBtn" type="button" disabled>Analyse this area</button>
+      <span id="drawMsg" class="muted"></span>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label><input type="checkbox" id="showOverlay" checked> Change map</label>
+      <label><input type="checkbox" id="showRegions" checked> Change regions</label>
+      <span id="legend" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Summary</h2>
+    <div id="summary" class="cards"></div>
+    <h2 style="margin-top:16px">Headline</h2>
+    <p id="headline"></p>
+    <h2>Possible factors</h2>
+    <div id="factors"></div>
+  </section>
+
+  <section class="card">
+    <h2>Historical comparison</h2>
+    <div class="chart"><canvas id="history"></canvas></div>
+    <p id="historyNote" class="muted"></p>
+  </section>
+
+  <section class="card">
+    <h2>Largest change regions</h2>
+    <div style="overflow-x:auto"><table id="regions"></table></div>
+  </section>
+
+  <section class="card full">
+    <h2>Before, after and difference</h2>
+    <img id="panels" alt="Observation 1, observation 2 and their difference" style="width:100%;height:auto;border-radius:8px;background:var(--bg)">
+    <p><a id="panelsLink" href="#" download class="muted">Download PNG</a></p>
+  </section>
+
+  <section class="card full">
+    <h2>Explanation</h2>
+    <div id="narrative" class="narr"></div>
+  </section>
+
+  <section class="card full">
+    <details>
+      <summary>Analyse a new polygon (takes about 2 minutes)</summary>
+      <form id="analyse" class="row" style="margin-top:10px;align-items:flex-start">
+        <textarea id="wkt" rows="3" style="width:min(640px,100%)"></textarea>
+        <div>
+          <label>From <input type="date" id="start" value="2026-08-01"></label><br>
+          <label>To <input type="date" id="end" value="2026-11-11"></label>
+        </div>
+        <div>
+          <label>Dates <select id="nDates"><option>2</option><option>4</option><option selected>6</option><option>8</option><option>10</option></select></label><br>
+          <label>Compare <select id="compare"><option value="consecutive" selected>each date with the next</option><option value="first_last">first and last only</option></select></label>
+        </div>
+        <button id="go" type="submit">Analyse</button>
+      </form>
+      <p id="analyseMsg" class="muted"></p>
+    </details>
+  </section>
+</main>
+
+<script>
+const API = "/api/v1/results";
+const $ = id => document.getElementById(id);
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+// ---- helpers (DOM nodes only: API text is never parsed as markup)
+function fmt(v, d = 3, signed = false) {
+  if (v == null || Number.isNaN(v)) return "n/a";
+  return (signed && v > 0 ? "+" : "") + Number(v).toFixed(d);
+}
+function el(tag, props = {}, children = []) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "text") n.textContent = v;
+    else if (k === "class") n.className = v;
+    else n.setAttribute(k, v);
+  }
+  for (const c of [].concat(children)) if (c != null) n.append(c);
+  return n;
+}
+function rich(text) {  // renders **bold** and nothing else
+  const frag = document.createDocumentFragment();
+  for (const part of String(text).split(/(\*\*[^*]+\*\*)/)) {
+    if (!part) continue;
+    frag.append(part.startsWith("**") && part.endsWith("**")
+      ? el("strong", { text: part.slice(2, -2) })
+      : document.createTextNode(part));
+  }
+  return frag;
+}
+async function getJSON(url, opts) {
+  const r = await fetch(url, opts);
+  if (!r.ok) {
+    let msg = `${r.status} ${r.statusText}`;
+    try { const j = await r.json(); if (j.detail) msg = typeof j.detail === "string" ? j.detail : JSON.stringify(j.detail); } catch (_) {}
+    throw new Error(msg);
+  }
+  return r.json();
+}
+function setStatus(msg, isErr = false) {
+  $("status").textContent = msg || "";
+  $("status").className = isErr ? "err" : "muted";
+}
+const guard = fn => (...args) => fn(...args).catch(e => setStatus(e.message, true));
+function pairLabel(name) {  // 20260812_20261011_675bfdad -> 2026-08-12 -> 2026-10-11 (675bfdad)
+  const [a, b, h] = name.split("_");
+  const d = s => `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+  return `${d(a)} → ${d(b)} (${h})`;
+}
+
+// ---- map
+const map = L.map("map").setView([20, 79], 5);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 18, attribution: "&copy; OpenStreetMap contributors",
+}).addTo(map);
+let overlay = null, regionsLayer = null, chart = null;
+
+function syncLayers() {
+  if (overlay) $("showOverlay").checked ? overlay.addTo(map) : map.removeLayer(overlay);
+  if (regionsLayer) $("showRegions").checked ? regionsLayer.addTo(map) : map.removeLayer(regionsLayer);
+}
+function regionPopup(p) {
+  return el("div", {}, [
+    el("strong", { text: `Region #${p.rank}: ${p.direction}` }),
+    el("div", { text: `${fmt(p.area_km2, 2)} km² · ${p.location_in_aoi} of the AOI` }),
+    el("div", { text: `Mean change ${fmt(p.mean_delta, 3, true)} m³/m³ (${fmt(p.mean_sm_t1)} → ${fmt(p.mean_sm_t2)})` }),
+    el("div", { text: `${p.dominant_land_cover ?? "n/a"} (${fmt(p.dominant_land_cover_pct, 0)}%)` }),
+  ]);
+}
+function renderMap(runId, pairId, fc, ov) {
+  if (overlay) map.removeLayer(overlay);
+  if (regionsLayer) map.removeLayer(regionsLayer);
+  overlay = L.imageOverlay(`${API}/runs/${runId}/pairs/${pairId}/delta.png`, ov.bounds, { opacity: 0.9 });
+  regionsLayer = L.geoJSON(fc, {
+    style: f => ({ color: f.properties.direction === "wetting" ? "#2166ac" : "#b2182b", weight: 1.5, fillOpacity: 0.3 }),
+    onEachFeature: (f, layer) => layer.bindPopup(() => regionPopup(f.properties)),
+  });
+  $("legend").textContent = `Scale ${ov.value_range[0]} to +${ov.value_range[1]} m³/m³`;
+  syncLayers();
+  map.fitBounds(ov.bounds, { padding: [20, 20] });
+  const panelsUrl = `${API}/runs/${runId}/pairs/${pairId}/panels.png`;
+  $("panels").src = panelsUrl;
+  $("panelsLink").href = panelsUrl;
+}
+
+// ---- panels
+function classArea(stats, names) {
+  return stats.classes.filter(c => names.includes(c.name)).reduce((a, c) => a + c.area_km2, 0);
+}
+function renderSummary(d) {
+  const s = d.stats, dl = s.delta || {};
+  const wet = classArea(s, ["wetting", "strong_wetting"]), dry = classArea(s, ["drying", "strong_drying"]);
+  const cards = [
+    ["Area compared", `${fmt(s.compared_area_km2, 0)} km²`, `${fmt(100 * s.compared_fraction, 0)}% of the AOI`],
+    ["Mean soil moisture", `${fmt(s.mean_sm_t1)} → ${fmt(s.mean_sm_t2)}`, "m³/m³"],
+    ["Mean change", fmt(dl.mean, 3, true), `median ${fmt(dl.median, 3, true)} m³/m³`],
+    ["Significantly wetter", `${fmt(wet, 0)} km²`, `${fmt(100 * wet / (s.compared_area_km2 || 1), 1)}%`],
+    ["Significantly drier", `${fmt(dry, 0)} km²`, `${fmt(100 * dry / (s.compared_area_km2 || 1), 1)}%`],
+    ["Change regions", `${d.regions_summary.n_regions}`, `${s.days} days apart`],
+  ];
+  $("summary").replaceChildren(...cards.map(([k, v, sub]) =>
+    el("div", { class: "stat" }, [el("span", { class: "muted", text: k }), el("b", { text: v }), el("span", { class: "muted", text: sub })])));
+}
+function renderExplanation(e) {
+  if (!e) {
+    $("headline").textContent = "No explanation was stored for this pair.";
+    $("factors").replaceChildren();
+    $("narrative").replaceChildren();
+    return;
+  }
+  $("headline").textContent = e.headline;
+  $("factors").replaceChildren(...e.factors.map(f => el("div", { class: "factor" }, [
+    el("div", { class: "row" }, [
+      el("strong", { text: f.name }),
+      el("span", { class: `badge ${f.verdict}`, text: f.verdict + (f.strength ? ` · ${f.strength}` : "") }),
+    ]),
+    el("div", { text: f.statement }),
+  ])));
+  $("narrative").replaceChildren(...e.narrative.split(/\n\s*\n/).filter(Boolean).map(p => el("p", {}, rich(p))));
+}
+function renderRegions(fc) {
+  const rows = fc.features.slice(0, 10).map(f => f.properties);
+  $("regions").replaceChildren(
+    el("tr", {}, ["#", "Change", "Area km²", "Mean Δ m³/m³", "Location", "Land cover"].map(h => el("th", { text: h }))),
+    ...rows.map(p => el("tr", {}, [
+      el("td", { text: p.rank }),
+      el("td", { class: p.direction === "wetting" ? "wet" : "dry", text: p.direction }),
+      el("td", { text: fmt(p.area_km2, 1) }),
+      el("td", { text: fmt(p.mean_delta, 3, true) }),
+      el("td", { text: p.location_in_aoi }),
+      el("td", { text: p.dominant_land_cover ?? "n/a" }),
+    ])),
+  );
+}
+function renderHistory(series) {
+  if (chart) chart.destroy();
+  Chart.defaults.color = css("--muted");
+  chart = new Chart($("history"), {
+    type: "line",
+    data: {
+      labels: series.map(r => r.time.slice(0, 10)),
+      datasets: [
+        { label: "Mean soil moisture (m³/m³)", data: series.map(r => r.mean_sm), borderColor: "#2166ac", backgroundColor: "#2166ac", yAxisID: "y", spanGaps: true },
+        { label: "Valid pixels (% of AOI)", data: series.map(r => 100 * r.valid_fraction), borderColor: "#b08900", backgroundColor: "#b08900", borderDash: [4, 3], yAxisID: "y2", spanGaps: true },
+      ],
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+      scales: {
+        y: { title: { display: true, text: "m³/m³" } },
+        y2: { position: "right", min: 0, max: 100, grid: { drawOnChartArea: false }, title: { display: true, text: "% valid" } },
+      },
+    },
+  });
+  $("historyNote").textContent = series.length
+    ? `${series.length} observations. Each point is the AOI mean over pixels that passed quality control on that date.`
+    : "";
+}
+
+// ---- loading
+async function showPair(runId, pairId) {
+  setStatus("Loading change…");
+  const base = `${API}/runs/${runId}/pairs/${pairId}`;
+  const [d, fc, ov] = await Promise.all([getJSON(base), getJSON(`${base}/regions`), getJSON(`${base}/overlay`)]);
+  renderSummary(d);
+  renderExplanation(d.explanation);
+  renderRegions(fc);
+  renderMap(runId, pairId, fc, ov);
+  setStatus("");
+}
+async function showRun(runId) {
+  setStatus("Loading run…");
+  const [detail, hist] = await Promise.all([
+    getJSON(`${API}/runs/${runId}`),
+    getJSON(`${API}/runs/${runId}/history`),
+  ]);
+  const pairs = detail.result.pairs;
+  $("pair").replaceChildren(...pairs.map(p => el("option", { value: p, text: pairLabel(p) })));
+  renderHistory(hist.series);
+  // default to the most recent pair (names sort by date); older pairs may lack an explanation
+  if (pairs.length) {
+    $("pair").value = pairs[pairs.length - 1];
+    await showPair(runId, pairs[pairs.length - 1]);
+  }
+  else {
+    $("summary").replaceChildren();
+    $("headline").textContent = "This run has no change pairs yet.";
+    $("factors").replaceChildren();
+    $("narrative").replaceChildren();
+    $("regions").replaceChildren();
+    setStatus("");
+  }
+}
+async function loadRuns(preferred) {
+  const { runs } = await getJSON(`${API}/runs`);
+  $("run").replaceChildren(...runs.map(r => el("option", {
+    value: r.run_id,
+    text: `${r.track_key} · ${r.dates.length} dates, ${r.dates[0]} → ${r.dates[r.dates.length - 1]} · ${fmt(r.aoi_km2, 0)} km²`,
+  })));
+  if (!runs.length) { setStatus("No prepared runs yet. Use “Analyse a new polygon” below."); return; }
+  $("run").value = runs.some(r => r.run_id === preferred) ? preferred : runs[0].run_id;
+  await showRun($("run").value);
+}
+
+$("run").addEventListener("change", guard(e => showRun(e.target.value)));
+$("pair").addEventListener("change", guard(e => showPair($("run").value, e.target.value)));
+$("showOverlay").addEventListener("change", syncLayers);
+$("showRegions").addEventListener("change", syncLayers);
+
+$("wkt").value = "POLYGON((78.90 18.30, 79.30 18.28, 79.35 18.60, 78.88 18.62, 78.90 18.30))";
+// ---- draw a 4-corner area with the cursor
+let drawing = false, corners = [];
+const draft = L.layerGroup().addTo(map);
+function setDrawMsg(text, isErr = false) {
+  $("drawMsg").textContent = text;
+  $("drawMsg").className = isErr ? "err" : "muted";
+}
+function cross(o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); }
+function segmentsCross(p1, p2, p3, p4) {
+  const d1 = cross(p3, p4, p1), d2 = cross(p3, p4, p2), d3 = cross(p1, p2, p3), d4 = cross(p1, p2, p4);
+  return d1 * d2 < 0 && d3 * d4 < 0;
+}
+function problemWith(c) {  // returns an error text, or null if the 4 corners form a simple quadrilateral
+  const twice = c.reduce((s, p, i) => { const q = c[(i + 1) % c.length]; return s + p[0] * q[1] - q[0] * p[1]; }, 0);
+  if (Math.abs(twice) < 1e-9) return "These four corners lie on one line. Clear and try again.";
+  if (segmentsCross(c[0], c[1], c[2], c[3]) || segmentsCross(c[1], c[2], c[3], c[0]))
+    return "The outline crosses itself. Clear, then click the corners in order around the edge.";
+  return null;
+}
+function wktOf(c) {
+  const ring = [...c, c[0]];
+  return `POLYGON((${ring.map(p => `${p[0].toFixed(6)} ${p[1].toFixed(6)}`).join(", ")}))`;
+}
+function redrawDraft() {
+  draft.clearLayers();
+  const ll = corners.map(p => [p[1], p[0]]);
+  ll.forEach(p => L.circleMarker(p, { radius: 5, color: "#1f6feb", fillColor: "#1f6feb", fillOpacity: 1 }).addTo(draft));
+  if (ll.length >= 2) L.polyline(ll, { color: "#1f6feb", dashArray: "4 4" }).addTo(draft);
+  if (ll.length === 4) L.polygon(ll, { color: "#1f6feb", weight: 2, fillOpacity: 0.15 }).addTo(draft);
+}
+function setDrawing(on) {
+  drawing = on;
+  $("map").classList.toggle("drawing", on);
+  $("drawBtn").textContent = on ? "Stop drawing" : "Draw area on map";
+}
+function clearDraw() {
+  corners = [];
+  setDrawing(false);
+  draft.clearLayers();
+  $("runMapBtn").disabled = true;
+  setDrawMsg("");
+}
+$("drawBtn").addEventListener("click", () => {
+  if (drawing) {
+    setDrawing(false);
+    setDrawMsg(corners.length ? `${corners.length} of 4 corners placed.` : "");
+    return;
+  }
+  clearDraw();
+  setDrawing(true);
+  setDrawMsg("Click the 4 corners of your area in order around its edge. Corner 1 of 4.");
+});
+$("clearBtn").addEventListener("click", clearDraw);
+map.on("click", e => {
+  if (!drawing) return;
+  corners.push([e.latlng.lng, e.latlng.lat]);
+  redrawDraft();
+  if (corners.length < 4) {
+    setDrawMsg(`Corner ${corners.length} of 4 placed. Click corner ${corners.length + 1}.`);
+    return;
+  }
+  setDrawing(false);
+  const err = problemWith(corners);
+  if (err) {
+    $("wkt").value = "";
+    $("runMapBtn").disabled = true;
+    setDrawMsg(err, true);
+    return;
+  }
+  $("wkt").value = wktOf(corners);
+  $("runMapBtn").disabled = false;
+  setDrawMsg("Area ready. Click “Analyse this area”.");
+});
+
+// ---- progress of a background analysis job
+const STEP_STARTS = [["Find granules", 0], ["Extract & clean", 10], ["Align grids", 37],
+                     ["Detect change", 42], ["Gather context", 45], ["Explain", 85]];
+function renderProgress(j) {
+  $("progressCard").hidden = false;
+  $("progressBar").value = j.percent;
+  $("progressPct").textContent = `${Math.round(j.percent)}%`;
+  $("progressStage").textContent = j.stage;
+  $("progressElapsed").textContent = `${Math.round(j.elapsed_s)} s elapsed`;
+  $("progressMsg").textContent = j.message || "";
+  const current = STEP_STARTS.reduce((k, [, from], i) => (j.percent >= from ? i : k), 0);
+  $("progressSteps").replaceChildren(...STEP_STARTS.map(([name], i) => el("li", {
+    text: `${i < current ? "✓" : i === current ? "▶" : "·"} ${name}`,
+    style: i === current ? "color:var(--text);font-weight:600" : "",
+  })));
+}
+async function pollJob(jobId) {
+  for (;;) {
+    const j = await getJSON(`/api/v1/analysis/jobs/${jobId}`);
+    renderProgress(j);
+    if (j.status === "done" || j.status === "failed") return j;
+    await new Promise(r => setTimeout(r, 1000));
+  }
+}
+
+// ---- analysis (used by the map button and the form)
+async function runAnalysis(wkt) {
+  if (!wkt) { setStatus("Draw an area on the map or paste a polygon first.", true); return; }
+  $("go").disabled = true;
+  $("runMapBtn").disabled = true;
+  setStatus("Running: streaming data, processing and explaining. This takes about 2 minutes.");
+  try {
+    const { job_id } = await getJSON("/api/v1/analysis/explain/jobs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        wkt, start_date: $("start").value, end_date: $("end").value,
+        max_observations: Number($("nDates").value),
+        change: { pairs: $("compare").value },
+      }),
+    });
+    const job = await pollJob(job_id);
+    if (job.status === "failed") throw new Error(job.error);
+    setStatus("Done.");
+    await loadRuns(job.run_id);
+    setTimeout(() => { $("progressCard").hidden = true; }, 4000);
+  } catch (err) {
+    setStatus(err.message, true);
+  } finally {
+    $("go").disabled = false;
+    $("runMapBtn").disabled = corners.length !== 4 || !$("wkt").value.trim();
+  }
+}
+$("analyse").addEventListener("submit", e => {
+  e.preventDefault();
+  runAnalysis($("wkt").value.trim());
+});
+$("runMapBtn").addEventListener("click", () => runAnalysis($("wkt").value.trim()));
+
+function stepPair(delta) {
+  const sel = $("pair");
+  const i = sel.selectedIndex + delta;
+  if (i < 0 || i >= sel.options.length) return;
+  sel.selectedIndex = i;
+  guard(() => showPair($("run").value, sel.value))();
+}
+$("prevPair").addEventListener("click", () => stepPair(-1));
+$("nextPair").addEventListener("click", () => stepPair(1));
+
+loadRuns().catch(e => setStatus(e.message, true));
+</script>
+</body>
+</html>
