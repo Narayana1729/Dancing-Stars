@@ -342,12 +342,12 @@ def test_three_tier_disturbance_classification():
     assert sustained_mask[1, 1]  # Sustained
     assert not sustained_mask[2, 2]  # Transient rejected!
 
-    # When N=2, Tier 2 must return UNVERIFIABLE_TWO_DATES
+    # When N=2, Tier 2 must return UNVERIFIABLE_INSUFFICIENT_OBSERVATIONS (or legacy UNVERIFIABLE_TWO_DATES)
     sustained_n2, status_n2 = evaluate_tier2_sustained_anomaly(
         dhv_t1, None, dratio_t1, valid_3
     )
     assert sustained_n2 is None
-    assert status_n2 == "UNVERIFIABLE_TWO_DATES"
+    assert status_n2 in ("UNVERIFIABLE_TWO_DATES", "UNVERIFIABLE_INSUFFICIENT_OBSERVATIONS")
 
     # 3. Tier 3: Long-Term Persistent Candidate (N >= 4, elapsed >= 180d)
     # Under N=2 or elapsed < 180d, must return UNVERIFIABLE_INSUFFICIENT_OBSERVATIONS

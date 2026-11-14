@@ -141,6 +141,23 @@ class ForestAnalysisService:
                 "spatial_filter_applied": primary_result.spatial_filter_applied,
                 "min_cluster_pixels": primary_result.min_cluster_pixels,
                 "cluster_count": primary_result.cluster_count,
+                "seven_class_distribution": primary_result.seven_class_distribution,
+                "tier_statuses": primary_result.tier_statuses,
+            },
+            "capabilities_audit": {
+                "available": [
+                    "tier1_instantaneous_candidate_detection",
+                    "seven_class_deterministic_screening",
+                    "physical_scattering_regimes",
+                    "polarimetric_differencing",
+                ],
+                "blocked": {
+                    "supervised_ml": "Requires ≥ 50 verified field compartments (43 samples exist; 53,556:1 imbalance).",
+                    "seasonal_baseline": "Requires 8-12 acquisitions across 3 seasons (only 2 spring dates exist).",
+                    "tier2_sustained": "Requires ≥ 3 consecutive epochs (N = 2 available).",
+                    "tier3_persistent": "Requires ≥ 180 days across seasonal transitions (48 days available).",
+                    "canopy_recovery": "Requires post-disturbance repeat monitoring cycles.",
+                },
             },
             "validation": primary_result.validation_metrics,
             "sensitivity_analysis": [

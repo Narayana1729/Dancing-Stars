@@ -20,6 +20,8 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from app.core.exceptions import DataSufficiencyError
+
 
 @dataclass
 class ReferenceSufficiencyAuditResult:
@@ -134,4 +136,37 @@ def audit_reference_label_sufficiency(
         stop_reason=stop_reason,
         detailed_audit_notes=notes,
     )
+
+
+def assert_ml_training_permitted(
+    validation_metrics_path: Optional[Path] = None,
+    min_required_positive_samples: int = 1000,
+    max_imbalance_ratio: float = 1000.0,
+    override_counts: Optional[Dict[str, int]] = None,
+) -> ReferenceSufficiencyAuditResult:
+    """Enforce ML safety invariant: prevent supervised training when ground truth is insufficient."""
+    audit = audit_reference_label_sufficiency(
+        validation_metrics_path=validation_metrics_path,
+        min_required_positive_samples=min_required_positive_samples,
+        override_counts=override_counts,
+    )
+    if not audit.is_sufficient_for_supervised_ml:
+        raise DataSufficiencyError(
+            message=(
+                f"Supervised ML training is prohibited by scientific safety policy: "
+                f"positive samples ({audit.positive_disturbance_pixels} pixels) < {min_required_positive_samples} "
+                f"or class imbalance (1:{audit.class_imbalance_ratio:,.0f}) exceeds threshold (1:{max_imbalance_ratio:,.0f}). "
+                f"Training would cause severe spatial overfitting to localized peripheral clearing."
+            ),
+            details={
+                "positive_samples": audit.positive_disturbance_pixels,
+                "required_positive_samples": min_required_positive_samples,
+                "class_imbalance_ratio": audit.class_imbalance_ratio,
+                "max_allowed_imbalance": max_imbalance_ratio,
+                "status": "BLOCKED_BY_DATA",
+                "recommended_method": "Deterministic polarimetric scattering rules or robust MAD z-scores.",
+            },
+        )
+    return audit
+
 

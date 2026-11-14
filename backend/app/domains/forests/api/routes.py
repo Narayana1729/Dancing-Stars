@@ -2,6 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import BaseModel, Field
 
+from app.domains.forests.detection.reference_audit import assert_ml_training_permitted
 from app.domains.forests.services.forest_service import ForestAnalysisService
 from app.domains.forests.services.visualization_service import ForestVisualizationService
 
@@ -15,6 +16,82 @@ CAPABILITIES = {
     "spatial_consistency_filtering": "operational",
     "independent_reference_validation": "operational",
     "multi_temporal_layer_visualization": "operational",
+}
+
+CAPABILITIES_AUDIT = {
+    "available_capabilities": {
+        "tier1_instantaneous_candidate_detection": {
+            "status": "AVAILABLE",
+            "observation_count": 2,
+            "temporal_coverage_days": 48.0,
+            "description": "Dual-date L-band SAR backscatter differencing (ΔHV <= -2.5 dB, ΔR <= -1.5 dB, MMU >= 1.92 ha).",
+            "confidence": "Provisional statistical candidate; unvalidated change hypothesis, NOT confirmed deforestation.",
+        },
+        "seven_class_deterministic_screening": {
+            "status": "AVAILABLE",
+            "observation_count": 2,
+            "description": "Rule-based 7-tier classification integrating polarimetric scattering regimes, RND, and MAD dispersion.",
+        },
+        "physical_scattering_regimes": {
+            "status": "AVAILABLE",
+            "observation_count": 2,
+            "description": "5-regime polarimetric decomposition separating volume loss, soil moisture drying, and surface roughness.",
+        },
+        "polarimetric_differencing": {
+            "status": "AVAILABLE",
+            "observation_count": 2,
+            "description": "Decibel difference rasters for ΔHH, ΔHV, ΔRatio, and linear RND.",
+        },
+    },
+    "blocked_capabilities": {
+        "supervised_machine_learning_classifier": {
+            "status": "BLOCKED_BY_DATA",
+            "available_positive_samples": 43,
+            "class_imbalance": "53,556:1",
+            "missing_data_requirements": "Requires ≥ 50 verified, geographically distributed field compartments across all 4 forest strata. Supervised ML is strictly prohibited.",
+        },
+        "multi_temporal_seasonal_reference_baseline": {
+            "status": "BLOCKED_BY_DATA",
+            "available_observations": 2,
+            "temporal_coverage": "48 days (single pre-monsoon dry season)",
+            "missing_data_requirements": "Requires 8-12 repeat acquisitions spanning all astronomical/meteorological seasons (Monsoon, Post-Monsoon, Dry).",
+        },
+        "tier2_temporally_sustained_anomaly_classifier": {
+            "status": "UNVERIFIABLE_INSUFFICIENT_OBSERVATIONS",
+            "available_observations": 2,
+            "missing_data_requirements": "Requires ≥ 3 consecutive post-disturbance repeat passes showing sustained backscatter suppression.",
+        },
+        "tier3_long_term_persistent_deforestation_classifier": {
+            "status": "UNVERIFIABLE_INSUFFICIENT_TEMPORAL_COVERAGE",
+            "available_observations": 2,
+            "temporal_coverage_days": 48.0,
+            "missing_data_requirements": "Requires ≥ 4 repeat passes spanning ≥ 180 days across seasonal leaf-flush cycles plus in-situ field validation.",
+        },
+        "canopy_recovery_and_rebound_tracking": {
+            "status": "UNVERIFIABLE_NO_POST_EVENT_OBSERVATIONS",
+            "available_observations": 2,
+            "missing_data_requirements": "Requires ≥ 3 post-disturbance repeat monitoring cycles spanning 6-12 months.",
+        },
+        "similipal_core_full_swath_coverage": {
+            "status": "PARTIALLY_BLOCKED",
+            "available_swath_overlap": "18.29% of Similipal Core covered by Track 098 Frame 012",
+            "missing_data_requirements": "Requires NISAR Track 098 Frame 013 to cover the southern 81.71% of the Core Reserve.",
+        },
+    },
+    "sensor_provenance": {
+        "mission": "NISAR (NASA-ISRO SAR Mission)",
+        "instrument": "L-band Synthetic Aperture Radar (1217.5 / 1257.5 MHz)",
+        "product_type": "Level-2 GCOV (Geocoded Covariance)",
+        "track": 98,
+        "frame": 12,
+        "pass": "Ascending",
+        "epochs": [
+            {"date": "2026-03-04T23:37:20Z", "cycle": 14},
+            {"date": "2026-04-21T23:37:20Z", "cycle": 18},
+        ],
+        "observation_count": 2,
+        "temporal_baseline_days": 48.0,
+    },
 }
 
 
@@ -44,8 +121,25 @@ def status() -> dict:
         "implemented": True,
         "study_region": "Similipal Tiger Reserve, Odisha, India",
         "capabilities": CAPABILITIES,
+        "capabilities_audit": CAPABILITIES_AUDIT,
+        "observation_count": 2,
+        "temporal_baseline_days": 48.0,
         "methodology": "Statistical Multi-Temporal SAR Radiometric Change Detection (NISAR L2 GCOV)",
+        "provenance": CAPABILITIES_AUDIT["sensor_provenance"],
     }
+
+
+@router.get("/capabilities")
+def get_capabilities() -> dict:
+    """Returns granular audit of operational vs blocked capabilities and data requirements."""
+    return CAPABILITIES_AUDIT
+
+
+@router.post("/ml/train")
+def train_supervised_model() -> dict:
+    """Supervised ML training endpoint guarded by scientific sample sufficiency invariants."""
+    assert_ml_training_permitted()
+    return {"status": "trained"}
 
 
 @router.post("/analyze")

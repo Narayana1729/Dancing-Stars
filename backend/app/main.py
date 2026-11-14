@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 
 from app.api_router import api_router
 from app.config import Settings, get_settings
-from app.core.exceptions import NotYetImplemented
+from app.core.exceptions import DataSufficiencyError, NotYetImplemented
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -22,6 +22,18 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.exception_handler(NotYetImplemented)
     async def _not_implemented(_: Request, exc: NotYetImplemented) -> JSONResponse:
         return JSONResponse(status_code=501, content={"detail": str(exc)})
+
+    @app.exception_handler(DataSufficiencyError)
+    async def _data_sufficiency_error(_: Request, exc: DataSufficiencyError) -> JSONResponse:
+        return JSONResponse(
+            status_code=422,
+            content={
+                "error": "DataSufficiencyError",
+                "detail": exc.message,
+                "status": "BLOCKED_BY_DATA",
+                "details": exc.details,
+            },
+        )
 
     @app.get("/health", tags=["system"])
     def health() -> dict:

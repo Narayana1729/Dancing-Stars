@@ -38,6 +38,8 @@ Thumbs.db
 
 # Backups & Archives
 .backup/
+*_backup*/
+*.bak
 *.zip
 *.tar.gz
 *.tgz

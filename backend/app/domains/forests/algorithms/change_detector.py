@@ -17,6 +17,10 @@ from scipy import ndimage
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 
 from app.domains.forests.algorithms.interfaces import ForestDisturbanceDetector
+from app.domains.forests.processing.temporal_analysis.disturbance_indicators import (
+    classify_seven_classes,
+    evaluate_multi_temporal_state,
+)
 
 
 @dataclass
@@ -35,6 +39,23 @@ class DisturbanceDetectionResult:
     min_cluster_pixels: int
     cluster_count: int
     validation_metrics: Optional[Dict[str, Any]] = None
+    seven_class_distribution: Optional[Dict[str, int]] = None
+    tier_statuses: Optional[Dict[str, str]] = None
+
+
+@dataclass
+class SevenClassClassificationResult:
+    """Consolidated outputs from the Phase 4.2.5 deterministic 7-class framework."""
+    classification_map: np.ndarray
+    disturbance_intensity: np.ndarray
+    uncertainty_index: np.ndarray
+    class_counts: Dict[str, int]
+    class_areas_ha: Dict[str, float]
+    num_observations: int
+    elapsed_days: float
+    total_valid_pixels: int
+    total_unobserved_pixels: int
+    capability_states: Dict[str, str]
 
 
 class StatisticalForestDisturbanceDetector(ForestDisturbanceDetector):
@@ -170,6 +191,27 @@ class StatisticalForestDisturbanceDetector(ForestDisturbanceDetector):
                 eval_mask=valid_forest,
             )
 
+        # Evaluate multi-temporal capability state machine
+        state = evaluate_multi_temporal_state(num_observations=2, elapsed_days=48.0)
+        tier_statuses = {
+            "tier1_instantaneous": state.tier1_status,
+            "tier2_sustained": state.tier2_status,
+            "tier3_persistent": state.tier3_status,
+            "canopy_recovery": state.recovery_status,
+        }
+
+        # Compute 7-class deterministic distribution over the active forest mask
+        _, _, _, summary = classify_seven_classes(
+            delta_hh_db=layers["delta_hh"],
+            delta_hv_db=layers["delta_hv"],
+            delta_ratio_db=layers["delta_ratio"],
+            valid_intersection=layers["valid_mask"],
+            forest_mask=forest_mask,
+            num_observations=2,
+            elapsed_days=48.0,
+            pixel_size_m=self.pixel_size_m,
+        )
+
         return DisturbanceDetectionResult(
             threshold_db=thresh,
             detected_pixels=detected_pixels,
@@ -185,6 +227,65 @@ class StatisticalForestDisturbanceDetector(ForestDisturbanceDetector):
             min_cluster_pixels=min_cluster,
             cluster_count=cluster_count,
             validation_metrics=validation,
+            seven_class_distribution=summary["class_counts"],
+            tier_statuses=tier_statuses,
+        )
+
+    def classify_seven_classes(
+        self,
+        baseline: Dict[str, np.ndarray],
+        target: Dict[str, np.ndarray],
+        forest_mask: Optional[np.ndarray] = None,
+        num_observations: int = 2,
+        elapsed_days: float = 48.0,
+        has_seasonal_coverage: bool = False,
+        tier2_sustained_mask: Optional[np.ndarray] = None,
+        tier3_persistent_mask: Optional[np.ndarray] = None,
+    ) -> SevenClassClassificationResult:
+        """Run the Phase 4.2.5 validated 7-class deterministic classification framework."""
+        layers = self.compute_layers(
+            hh0=baseline["hh"],
+            hv0=baseline["hv"],
+            hh1=target["hh"],
+            hv1=target["hv"],
+        )
+
+        state = evaluate_multi_temporal_state(
+            num_observations=num_observations,
+            elapsed_days=elapsed_days,
+            has_seasonal_coverage=has_seasonal_coverage,
+        )
+
+        cmap, intensity, uncertainty, summary = classify_seven_classes(
+            delta_hh_db=layers["delta_hh"],
+            delta_hv_db=layers["delta_hv"],
+            delta_ratio_db=layers["delta_ratio"],
+            valid_intersection=layers["valid_mask"],
+            forest_mask=forest_mask,
+            num_observations=num_observations,
+            elapsed_days=elapsed_days,
+            has_seasonal_coverage=has_seasonal_coverage,
+            tier2_sustained_mask=tier2_sustained_mask,
+            tier3_persistent_mask=tier3_persistent_mask,
+            pixel_size_m=self.pixel_size_m,
+        )
+
+        return SevenClassClassificationResult(
+            classification_map=cmap,
+            disturbance_intensity=intensity,
+            uncertainty_index=uncertainty,
+            class_counts=summary["class_counts"],
+            class_areas_ha=summary["class_areas_ha"],
+            num_observations=num_observations,
+            elapsed_days=elapsed_days,
+            total_valid_pixels=summary["total_valid_pixels"],
+            total_unobserved_pixels=summary["total_unobserved_pixels"],
+            capability_states={
+                "tier1": state.tier1_status,
+                "tier2": state.tier2_status,
+                "tier3": state.tier3_status,
+                "recovery": state.recovery_status,
+            },
         )
 
     def evaluate_against_reference(

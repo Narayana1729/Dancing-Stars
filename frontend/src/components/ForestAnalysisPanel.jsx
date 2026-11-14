@@ -123,30 +123,79 @@ export default function ForestAnalysisPanel() {
 
         {/* Multi-Temporal Tiers Status Table */}
         <div className="space-y-1.5 text-[11px]">
-          <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-slate-800">
+          <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-amber-900/40">
             <div>
-              <div className="font-semibold text-slate-300">Tier 2: Sustained Anomaly</div>
-              <div className="text-[10px] text-slate-500">{t2.reason}</div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-slate-200">Tier 2: Sustained Anomaly</span>
+                <span className="text-[9px] font-mono text-amber-300 bg-amber-950/60 px-1.5 py-0.2 rounded border border-amber-700/40">N ≥ 3</span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{t2.reason}</div>
             </div>
-            <span className="text-[9px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">UNVERIFIABLE</span>
+            <span className="text-[9px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-600/40">
+              REQUIRES ADDITIONAL OBSERVATIONS
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-purple-900/40">
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-slate-200">Tier 3: Persistent Deforestation</span>
+                <span className="text-[9px] font-mono text-purple-300 bg-purple-950/60 px-1.5 py-0.2 rounded border border-purple-700/40">N ≥ 4 · ≥180d</span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{t3.reason}</div>
+            </div>
+            <span className="text-[9px] font-bold text-purple-300 bg-purple-950/80 px-2 py-0.5 rounded border border-purple-600/40">
+              REQUIRES SEASONAL COVERAGE
+            </span>
           </div>
 
           <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-slate-800">
             <div>
-              <div className="font-semibold text-slate-300">Tier 3: Persistent Deforestation</div>
-              <div className="text-[10px] text-slate-500">{t3.reason}</div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-slate-200">Canopy Recovery Status</span>
+                <span className="text-[9px] font-mono text-slate-400 bg-slate-800 px-1.5 py-0.2 rounded">Post-Event Repeat</span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">{rec.reason}</div>
             </div>
-            <span className="text-[9px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">UNVERIFIABLE</span>
+            <span className="text-[9px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">
+              REQUIRES ADDITIONAL OBSERVATIONS
+            </span>
           </div>
 
-          <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-slate-800">
+          <div className="flex justify-between items-center p-2 rounded bg-slate-900 border border-rose-900/30">
             <div>
-              <div className="font-semibold text-slate-300">Canopy Recovery Status</div>
-              <div className="text-[10px] text-slate-500">{rec.reason}</div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-rose-200">Confirmed Deforestation Verdict</span>
+                <span className="text-[9px] font-mono text-rose-300 bg-rose-950/60 px-1.5 py-0.2 rounded border border-rose-700/40">In-Situ</span>
+              </div>
+              <div className="text-[10px] text-slate-400 mt-0.5">Cannot be established from SAR backscatter alone without ground truth.</div>
             </div>
-            <span className="text-[9px] font-semibold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">UNVERIFIED</span>
+            <span className="text-[9px] font-bold text-rose-300 bg-rose-950/80 px-2 py-0.5 rounded border border-rose-600/40">
+              REQUIRES INDEPENDENT VERIFICATION
+            </span>
           </div>
         </div>
+      </section>
+
+      {/* Blocked Capabilities Transparency Card */}
+      <section className="rounded-xl border border-rose-900/30 bg-rose-950/10 p-3.5 space-y-2 text-xs">
+        <h4 className="text-xs font-semibold text-rose-300 flex items-center justify-between">
+          <span>Data-Blocked Capabilities & Safeguards</span>
+          <span className="text-[9px] font-mono text-rose-400 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-700/40">
+            Enforced by Policy
+          </span>
+        </h4>
+        <ul className="text-[11px] text-slate-400 space-y-1 list-disc list-inside">
+          <li>
+            <strong className="text-slate-300">Supervised ML Training:</strong> Blocked (only 43 positive pixels in 1 micro-event; 53,556:1 class imbalance). Prevented by DataSufficiencyError.
+          </li>
+          <li>
+            <strong className="text-slate-300">Seasonal Reference Baseline:</strong> Blocked (requires 8–12 repeat passes across Monsoon, Post-Monsoon, and Dry seasons).
+          </li>
+          <li>
+            <strong className="text-slate-300">Full Sanctuary Core Coverage:</strong> Partially Blocked (Track 098 Frame 012 covers 18.29%; Frame 013 required for southern 81.71%).
+          </li>
+        </ul>
       </section>
 
       {/* 4. Coverage & Valid Observation Statistics */}
