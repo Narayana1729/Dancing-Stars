@@ -5,12 +5,14 @@ from app.domains.wildfires.api.routes import router as wildfires_router
 from app.shared.geospatial.routes import router as geospatial_router
 from app.shared.satellite.base import DEFAULT_FOREST_PRODUCTS, NON_DEFAULT_FOREST_PRODUCTS
 from app.shared.satellite.routes import router as catalogue_router
+from app.shared.visualization.routes import router as visualization_router
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(forests_router)
 api_router.include_router(wildfires_router)
 api_router.include_router(geospatial_router)
 api_router.include_router(catalogue_router)
+api_router.include_router(visualization_router)
 
 
 @api_router.get("/data-products", tags=["shared"])

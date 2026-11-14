@@ -84,25 +84,53 @@ def download_scene(scene: dict, token: str, dry_run: bool = False) -> Path | Non
 
     RAW_DIR.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
-    session.headers["Authorization"] = f"Bearer {token}"
 
+    max_retries = 10
+    retry_delay = 5.0
     t0 = time.time()
-    with session.get(download_url, stream=True, timeout=60, allow_redirects=True) as resp:
-        resp.raise_for_status()
-        downloaded = 0
-        last_log = t0
-        with open(part_file, "wb") as f:
-            for chunk in resp.iter_content(chunk_size=4 * 1024 * 1024):
-                if chunk:
-                    f.write(chunk)
-                    downloaded += len(chunk)
-                    now = time.time()
-                    if now - last_log > 5.0 or downloaded == expected_bytes:
-                        elapsed = now - t0
-                        rate = (downloaded / (1024 * 1024)) / elapsed if elapsed > 0 else 0
-                        pct = (downloaded / expected_bytes) * 100 if expected_bytes else 0
-                        print(f"  Downloaded: {downloaded / (1024**3):.2f} / {needed_gib:.2f} GiB ({pct:5.1f}%) @ {rate:.2f} MB/s", end="\r")
-                        last_log = now
+
+    while True:
+        downloaded = part_file.stat().st_size if part_file.exists() else 0
+        if expected_bytes and downloaded >= expected_bytes:
+            break
+
+        headers = {"Authorization": f"Bearer {token}"}
+        if downloaded > 0:
+            headers["Range"] = f"bytes={downloaded}-"
+            print(f"  [RESUME] Resuming from {downloaded / (1024**3):.2f} GiB ({downloaded:,} bytes)...")
+
+        try:
+            with session.get(download_url, headers=headers, stream=True, timeout=90, allow_redirects=True) as resp:
+                if resp.status_code not in (200, 206):
+                    resp.raise_for_status()
+
+                mode = "ab" if downloaded > 0 else "wb"
+                last_log = time.time()
+                with open(part_file, mode) as f:
+                    for chunk in resp.iter_content(chunk_size=4 * 1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+                            downloaded += len(chunk)
+                            now = time.time()
+                            if now - last_log > 5.0 or downloaded == expected_bytes:
+                                elapsed = now - t0
+                                rate = (downloaded / (1024 * 1024)) / elapsed if elapsed > 0 else 0
+                                pct = (downloaded / expected_bytes) * 100 if expected_bytes else 0
+                                print(f"  Downloaded: {downloaded / (1024**3):.2f} / {needed_gib:.2f} GiB ({pct:5.1f}%) @ {rate:.2f} MB/s", end="\r")
+                                last_log = now
+
+            if expected_bytes and downloaded >= expected_bytes:
+                break
+            elif not expected_bytes:
+                break
+
+        except (requests.exceptions.RequestException, TimeoutError) as e:
+            max_retries -= 1
+            if max_retries <= 0:
+                raise RuntimeError(f"Download failed after multiple retries: {e}")
+            print(f"\n  [RETRY] Connection interrupted ({e}). Retrying in {retry_delay:.0f}s... ({max_retries} retries left)")
+            time.sleep(retry_delay)
+            retry_delay = min(retry_delay * 1.5, 30.0)
 
     print()
     part_file.replace(dest_file)
